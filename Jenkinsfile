@@ -9,10 +9,11 @@ pipeline {
                 bat 'npm install' 
             }
         }
-	stage('Test') { 
+		stage('Test') { 
             steps {
                 bat 'npm install --save-dev cross-env'
                 bat 'npm test' 
             }
         }
+	}
 }
