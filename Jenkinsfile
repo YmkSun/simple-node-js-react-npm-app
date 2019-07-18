@@ -1,30 +1,28 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:6-alpine' 
-            args '-p 3000:3000' 
-        }
-    }
+    agent any
     environment {
-        HOME = '.'
 		CI = 'true'
     }
     stages {
         stage('Build') { 
             steps {
-                sh 'npm install' 
+                bat 'npm install' 
             }
         }
 	stage('Test') { 
             steps {
-                sh './jenkins/scripts/test.sh' 
+                bat 'npm install --save-dev cross-env'
+                bat 'npm test' 
             }
         }
 	stage('Deliver') {
             steps {
-                sh './jenkins/scripts/deliver.sh'
+                bat 'npm run build'
+                bat 'npm start &'
+                bat 'sleep 1'
+                bat 'echo $! > .pidfile'
                 input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
+                bat 'kill $(cat .pidfile)'
             }
         }
     }
